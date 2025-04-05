@@ -1,0 +1,9 @@
+/* src/styles.css */
+.upload-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  #status.success { color: green; }
+  #status.error { color: red; }
+  #status.progress { color: blue; }
