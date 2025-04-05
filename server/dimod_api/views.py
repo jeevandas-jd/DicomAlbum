@@ -5,7 +5,11 @@ from rest_framework.views import APIView
 from .models import DICOMFile
 import pydicom  
 import os
-
+from rest_framework import generics
+from .serializers import AlbumSerializer
+from .models import Album
+from django.shortcuts import get_object_or_404
+from .serializers import DICOMFileSerializer
 class UploadView(APIView):
     parser_classes = [MultiPartParser]
     
@@ -52,3 +56,29 @@ class UploadView(APIView):
                 })
         
         return Response({"results": results}, status=201)
+class AlbumListCreate(generics.ListCreateAPIView):
+    queryset = Album.objects.all()
+    serializer_class = AlbumSerializer
+
+class AlbumDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Album.objects.all()
+    serializer_class = AlbumSerializer
+
+class AddToAlbumView(APIView):
+    def post(self, request, album_id):
+        album = get_object_or_404(Album, pk=album_id)
+        file_ids = request.data.get('file_ids', [])
+        album.dicom_files.add(*file_ids)
+        return Response({"status": "success"})
+class DICOMFileListView(generics.ListAPIView):
+    serializer_class = DICOMFileSerializer
+    
+    def get_queryset(self):
+        queryset = DICOMFile.objects.all()
+        
+        # Optional filtering
+        album_id = self.request.query_params.get('album_id')
+        if album_id:
+            queryset = queryset.filter(albums__id=album_id)
+            
+        return queryset

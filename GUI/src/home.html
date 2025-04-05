@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DICOM Viewer Home</title>
+  <link rel="stylesheet" href="styles/home.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>DICOM Album Manager</h1>
+    </header>
+    
+    <main class="tool-grid">
+      <div class="tool-card" onclick="navigate('upload')">
+        <img src="assets/upload-icon.svg" alt="Upload">
+        <h2>Upload DICOM</h2>
+      </div>
+      
+      <div class="tool-card" onclick="navigate('albums')">
+        <img src="assets/album-icon.svg" alt="Albums">
+        <h2>Manage Albums</h2>
+      </div>
+      
+      <div class="tool-card" onclick="navigate('viewer')">
+        <img src="assets/viewer-icon.svg" alt="Viewer">
+        <h2>DICOM Viewer</h2>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/navigation.js"></script>
+</body>
+</html>

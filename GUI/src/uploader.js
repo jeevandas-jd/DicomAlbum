@@ -28,3 +28,13 @@ function updateStatus(message, type) {
       console.error('Upload failed:', err);
     }
   });
+
+  fetch('../components/sidebar.html')
+      .then(response => response.text())
+      .then(html => {
+        document.body.insertAdjacentHTML('afterbegin', html);
+        // Load sidebar JS after HTML is inserted
+        const script = document.createElement('script');
+        script.src = '../js/sidebar.js';
+        document.body.appendChild(script);
+      });

@@ -46,18 +46,46 @@ ipcMain.handle('upload-dicom', async (event, filePaths) => {
   }
 });
 
-app.whenReady().then(() => {
-  mainWindow = new BrowserWindow({
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      enableRemoteModule: false
-    }
-  });
+ipcMain.handle('albums:list', async () => {
+  const response = await axios.get('http://localhost:8000/api/albums/');
+  return response.data;
+});
 
-  mainWindow.loadFile('src/uploader.html');
+ipcMain.handle('albums:create', async (event, { name, description }) => {
+  const response = await axios.post('http://localhost:8000/api/albums/', {
+    name,
+    description
+  });
+  return response.data;
+});
+
+ipcMain.handle('albums:add-files', async (event, { albumId, fileIds }) => {
+  const response = await axios.post(`http://localhost:8000/api/albums/${albumId}/add-files/`, {
+    file_ids: fileIds
+  });
+  return response.data;
+}); 
+
+app.whenReady().then(() => {
+// Modify your BrowserWindow creation:
+  mainWindow = new BrowserWindow({
+  width: 1000,
+  height: 700,
+  webPreferences: {
+    preload: path.join(__dirname, 'preload.js'),
+    nodeIntegration: false,
+    contextIsolation: true
+  }
+});
+
+// Load home page first
+mainWindow.loadFile('src/home.html');
 });
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
+});
+
+ipcMain.on('navigate', (event, page) => {
+  mainWindow.loadFile(`src/${page}.html`);
 });
