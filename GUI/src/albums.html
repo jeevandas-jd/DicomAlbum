@@ -1,13 +1,59 @@
-<!-- src/albums.html -->
- 
-<div class="album-container">
-    <div class="sidebar">
-      <button id="create-album-btn">+ New Album</button>
-      <div id="album-list"></div>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Album Manager</title>
+  <link rel="stylesheet" href="styles/sidebar.css">
+  <link rel="stylesheet" href="styles/albums.css">
+</head>
+<body>
+  <!-- Sidebar (same as other pages) -->
+  <nav class="sidebar">
+    <!-- ... your existing sidebar ... -->
+      <!-- Sidebar Component -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <img src="assets/logo-icon.svg" alt="DICOM Album" class="sidebar-logo">
     </div>
     
-    <div class="content">
-      <div id="album-metadata"></div>
-      <div id="album-images"></div>
+    <ul class="sidebar-menu">
+      <li class="menu-item" data-page="uploader">
+        <img src="assets/upload-icon.svg" alt="Upload">
+        <span>Upload DICOM</span>
+      </li>
+      
+      <li class="menu-item" data-page="albums">
+        <img src="assets/album-icon.svg" alt="Albums">
+        <span>Manage Albums</span>
+      </li>
+      
+      <li class="menu-item" data-page="viewer">
+        <img src="assets/viewer-icon.svg" alt="Viewer">
+        <span>DICOM Viewer</span>
+      </li>
+      
+      <li class="menu-item" data-page="home">
+        <img src="assets/home-icon.svg" alt="Home">
+        <span>Return Home</span>
+      </li>
+    </ul>
+  </nav>
+  </nav>
+
+  <div class="content-area">
+    <div class="album-manager">
+      <div class="album-sidebar">
+        <button id="create-album-btn" class="btn-primary">+ New Album</button>
+        <div id="album-list" class="album-list"></div>
+      </div>
+      
+      <div class="album-content">
+        <div id="album-metadata" class="album-metadata"></div>
+        <div id="album-images" class="album-images"></div>
+      </div>
     </div>
   </div>
+
+  <script src="js/albums.js"></script>
+  <script src="js/sidebar.js"></script>
+</body>
+</html>

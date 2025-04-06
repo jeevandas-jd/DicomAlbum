@@ -71,14 +71,12 @@ class AddToAlbumView(APIView):
         album.dicom_files.add(*file_ids)
         return Response({"status": "success"})
 class DICOMFileListView(generics.ListAPIView):
+    queryset = DICOMFile.objects.all()
     serializer_class = DICOMFileSerializer
-    
+
     def get_queryset(self):
-        queryset = DICOMFile.objects.all()
-        
-        # Optional filtering
-        album_id = self.request.query_params.get('album_id')
-        if album_id:
-            queryset = queryset.filter(albums__id=album_id)
-            
+        queryset = super().get_queryset()
+
+        print(f"Queryset before filtering: {queryset}")
+        # Add any filtering logic here
         return queryset
