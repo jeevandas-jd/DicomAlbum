@@ -23,6 +23,7 @@ function updateStatus(message, type) {
       updateStatus('Uploading...', 'progress');
       await window.electronAPI.uploadDICOM(result.filePaths);
       updateStatus('Upload successful!', 'success');
+      console.log('Upload successful');
     } catch (err) {
       updateStatus(`Error: ${err.message}`, 'error');
       console.error('Upload failed:', err);

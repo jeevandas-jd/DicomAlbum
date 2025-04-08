@@ -1,11 +1,10 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const axios = require('axios');
 const fs = require('fs');
-const FormData = require('form-data'); // Need to explicitly require FormData
+const FormData = require('form-data');
 
 let mainWindow;
-const { dialog } = require('electron');
 
 ipcMain.handle('show-open-dialog', async () => {
   return await dialog.showOpenDialog({
@@ -16,12 +15,11 @@ ipcMain.handle('show-open-dialog', async () => {
     ]
   });
 });
-// Handle DICOM uploads
+
 ipcMain.handle('upload-dicom', async (event, filePaths) => {
   try {
     const formData = new FormData();
 
-    // Add each file with proper filename
     filePaths.forEach(filePath => {
       formData.append('files', fs.createReadStream(filePath), {
         filename: path.basename(filePath),
@@ -64,22 +62,20 @@ ipcMain.handle('albums:add-files', async (event, { albumId, fileIds }) => {
     file_ids: fileIds
   });
   return response.data;
-}); 
-
-app.whenReady().then(() => {
-// Modify your BrowserWindow creation:
-  mainWindow = new BrowserWindow({
-  width: 1000,
-  height: 700,
-  webPreferences: {
-    preload: path.join(__dirname, 'preload.js'),
-    nodeIntegration: false,
-    contextIsolation: true
-  }
 });
 
-// Load home page first
-mainWindow.loadFile('src/home.html');
+app.whenReady().then(() => {
+  mainWindow = new BrowserWindow({
+    width: 1000,
+    height: 700,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  mainWindow.loadFile('src/home.html');
 });
 
 app.on('window-all-closed', () => {

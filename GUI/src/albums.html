@@ -4,56 +4,71 @@
   <title>Album Manager</title>
   <link rel="stylesheet" href="styles/sidebar.css">
   <link rel="stylesheet" href="styles/albums.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- ✅ Added SweetAlert2 -->
 </head>
 <body>
-  <!-- Sidebar (same as other pages) -->
-  <nav class="sidebar">
-    <!-- ... your existing sidebar ... -->
-      <!-- Sidebar Component -->
+  <!-- Sidebar -->
   <nav class="sidebar">
     <div class="sidebar-header">
       <img src="assets/logo-icon.svg" alt="DICOM Album" class="sidebar-logo">
     </div>
-    
+
     <ul class="sidebar-menu">
       <li class="menu-item" data-page="uploader">
         <img src="assets/upload-icon.svg" alt="Upload">
         <span>Upload DICOM</span>
       </li>
-      
+
       <li class="menu-item" data-page="albums">
         <img src="assets/album-icon.svg" alt="Albums">
         <span>Manage Albums</span>
       </li>
-      
+
       <li class="menu-item" data-page="viewer">
         <img src="assets/viewer-icon.svg" alt="Viewer">
         <span>DICOM Viewer</span>
       </li>
-      
+
       <li class="menu-item" data-page="home">
         <img src="assets/home-icon.svg" alt="Home">
         <span>Return Home</span>
       </li>
     </ul>
   </nav>
-  </nav>
 
   <div class="content-area">
     <div class="album-manager">
-      <div class="album-sidebar">
-        <button id="create-album-btn" class="btn-primary">+ New Album</button>
-        <div id="album-list" class="album-list"></div>
+      <div class="album-sidebar"></div>
+
+      <h2>Albums</h2>
+      <div id="album-list" class="album-list"></div>
+
+      <div id="album-details" style="display: none;">
+        <h3>Selected Album: <span id="selected-album-name"></span></h3>
+        <button id="add-to-album-btn" class="btn-primary" disabled>Add Selected Files</button>
       </div>
-      
-      <div class="album-content">
-        <div id="album-metadata" class="album-metadata"></div>
-        <div id="album-images" class="album-images"></div>
+
+      <button id="create-album-btn" class="btn-primary">+ New Album</button>
+      <input type="text" id="dicom-search" placeholder="Search DICOM files..." class="dicom-search">
+
+      <div id="dicom-files-list" class="dicom-files-list"></div>
+
+      <button id="add-to-album-btn" class="btn-secondary" style="display:none;">Add to Album</button>
+    </div>
+
+    <div class="album-content">
+      <h2>Albums</h2>
+      <div id="album-list" class="album-list"></div>
+
+      <div id="album-details" class="album-details" style="display: none;">
+        <h3 id="album-detail-name"></h3>
+        <p id="album-detail-description"></p>
       </div>
     </div>
   </div>
 
-  <script src="js/albums.js"></script>
+  <script src="albums.js"></script>
   <script src="js/sidebar.js"></script>
 </body>
 </html>

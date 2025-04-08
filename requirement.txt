@@ -1,0 +1,9 @@
+asgiref==3.8.1
+Django==5.2
+django-cors-headers==4.7.0
+djangorestframework==3.14.0
+pydicom==3.0.1
+Python-Rest-Framework==0.3.14
+pytz==2025.2
+six==1.17.0
+sqlparse==0.5.3

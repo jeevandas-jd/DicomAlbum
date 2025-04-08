@@ -1,241 +1,151 @@
 class AlbumManager {
+  static albums = [];
   static selectedAlbum = null;
   static selectedDicomFiles = new Set();
 
   static async init() {
-    this.bindEvents();
+    this.setupEventListeners();
     await this.loadAlbums();
     await this.loadDicomFiles();
   }
 
-  static bindEvents() {
-    // Album creation
-    document.getElementById('create-album-btn').addEventListener('click', () => {
-      this.showCreateAlbumDialog();
-    });
+  static setupEventListeners() {
+    document.getElementById('create-album-btn').addEventListener('click', this.showCreateAlbumModal);
+    document.getElementById('add-to-album-btn').addEventListener('click', this.addToAlbum.bind(this));
+  }
 
-    // Add to album
-    document.getElementById('add-to-album-btn').addEventListener('click', () => {
-      this.addFilesToSelectedAlbum();
+  static showCreateAlbumModal() {
+    Swal.fire({
+      title: 'Create New Album',
+      input: 'text',
+      inputLabel: 'Album Name',
+      inputPlaceholder: 'Enter album name',
+      showCancelButton: true,
+      confirmButtonText: 'Create',
+    }).then(async (result) => {
+      if (result.isConfirmed && result.value.trim()) {
+        await AlbumManager.createAlbum(result.value.trim());
+      }
     });
+  }
 
-    // Search functionality
-    document.getElementById('dicom-search').addEventListener('input', (e) => {
-      this.filterDicomFiles(e.target.value);
-    });
+  static async createAlbum(name) {
+    try {
+      const album = await window.electronAPI.invoke('albums:create', { name });
+      this.albums.push(album);
+      this.renderAlbumList();
+      Swal.fire('Success', 'Album created successfully', 'success');
+    } catch (error) {
+      console.error('Failed to create album:', error);
+      Swal.fire('Error', 'Failed to create album', 'error');
+    }
   }
 
   static async loadAlbums() {
     try {
-      const albums = await this.listAlbums();
-      this.renderAlbumList(albums);
+      const albums = await window.electronAPI.invoke('albums:get');
+      this.albums = albums;
+      this.renderAlbumList();
     } catch (error) {
       console.error('Failed to load albums:', error);
       Swal.fire('Error', 'Failed to load albums', 'error');
     }
   }
 
+  static renderAlbumList() {
+    const albumList = document.getElementById('album-list');
+    albumList.innerHTML = '';
+
+    this.albums.forEach((album, index) => {
+      const div = document.createElement('div');
+      div.className = 'album-item';
+      div.innerText = album.name;
+      div.addEventListener('click', () => this.selectAlbum(index));
+      albumList.appendChild(div);
+    });
+  }
+
+  static selectAlbum(index) {
+    this.selectedAlbum = this.albums[index];
+    document.getElementById('selected-album-name').innerText = this.selectedAlbum.name;
+    document.getElementById('album-details').style.display = 'block';
+    this.updateAddToAlbumButtonState();
+  }
+
   static async loadDicomFiles() {
+    const container = document.getElementById('dicom-files-list');
+    container.innerHTML = '<p>Loading DICOM files...</p>';
     try {
       const response = await axios.get('http://localhost:8000/api/images/');
-      console.log('Loaded DICOM files:', response.data);
       this.renderDicomFiles(response.data);
     } catch (error) {
       console.error('Failed to load DICOM files:', error);
       Swal.fire('Error', 'Failed to load DICOM files', 'error');
-      console.error('Failed to load DICOM files:', error);
-      Swal.fire('Error', 'Failed to load DICOM files', 'error');
     }
-  }
-
-  static renderAlbumList(albums) {
-    const albumList = document.getElementById('album-list');
-    albumList.innerHTML = '';
-
-    if (albums.length === 0) {
-      albumList.innerHTML = '<div class="empty-state">No albums created yet</div>';
-      return;
-    }
-
-    albums.forEach(album => {
-      const albumElement = document.createElement('div');
-      albumElement.className = 'album-item';
-      albumElement.dataset.albumId = album.id;
-      
-      albumElement.innerHTML = `
-        <div class="album-item-header">
-          <h3>${album.name}</h3>
-          <span class="file-count">${album.dicom_files?.length || 0} files</span>
-        </div>
-        <p class="album-description">${album.description || 'No description'}</p>
-        <div class="album-meta">
-          <small>Created: ${new Date(album.created_at).toLocaleDateString()}</small>
-        </div>
-      `;
-
-      albumElement.addEventListener('click', () => this.selectAlbum(album));
-      albumList.appendChild(albumElement);
-    });
   }
 
   static renderDicomFiles(files) {
-    const filesContainer = document.getElementById('dicom-files-list');
-    filesContainer.innerHTML = '';
+    const container = document.getElementById('dicom-files-list');
+    container.innerHTML = '';
 
-    if (files.length === 0) {
-      filesContainer.innerHTML = '<div class="empty-state">No DICOM files available</div>';
+    files.forEach(file => {
+      const div = document.createElement('div');
+      div.className = 'dicom-file';
+      div.innerText = file.name;
+      div.addEventListener('click', () => this.toggleDicomSelection(file, div));
+      container.appendChild(div);
+    });
+  }
+
+  static toggleDicomSelection(file, element) {
+    if (this.selectedDicomFiles.has(file)) {
+      this.selectedDicomFiles.delete(file);
+      element.classList.remove('selected');
+    } else {
+      this.selectedDicomFiles.add(file);
+      element.classList.add('selected');
+    }
+    this.updateAddToAlbumButtonState();
+  }
+
+  static updateAddToAlbumButtonState() {
+    const btn = document.getElementById('add-to-album-btn');
+    btn.disabled = !this.selectedAlbum || this.selectedDicomFiles.size === 0;
+  }
+
+  static async addToAlbum() {
+    if (!this.selectedAlbum || this.selectedDicomFiles.size === 0) {
+      Swal.fire('Warning', 'Please select an album and DICOM files first.', 'warning');
       return;
     }
 
-    files.forEach(file => {
-      const fileElement = document.createElement('div');
-      fileElement.className = 'dicom-file-item';
-      fileElement.dataset.fileId = file.id;
-      
-      fileElement.innerHTML = `
-        <div class="file-thumbnail">
-          <img src="http://localhost:8000${file.thumbnail_url || '/static/default-dicom.png'}" alt="DICOM thumbnail">
-          <div class="selection-checkbox"></div>
-        </div>
-        <div class="file-info">
-          <h4>${file.patient_id || 'Unknown Patient'}</h4>
-          <p>${file.modality} • ${file.study_date || 'Unknown date'}</p>
-          <p class="file-study">${file.study_description || ''}</p>
-        </div>
-      `;
-
-      fileElement.addEventListener('click', (e) => {
-        if (!e.target.closest('.file-thumbnail')) return;
-        this.toggleFileSelection(file.id, fileElement);
-      });
-
-      filesContainer.appendChild(fileElement);
-    });
-  }
-
-  static toggleFileSelection(fileId, element) {
-    if (this.selectedDicomFiles.has(fileId)) {
-      this.selectedDicomFiles.delete(fileId);
-      element.classList.remove('selected');
-    } else {
-      this.selectedDicomFiles.add(fileId);
-      element.classList.add('selected');
-    }
-    
-    // Show/hide add to album button
-    if (this.selectedAlbum && this.selectedDicomFiles.size > 0) {
-      document.getElementById('add-to-album-btn').style.display = 'block';
-    } else {
-      document.getElementById('add-to-album-btn').style.display = 'none';
-    }
-  }
-
-  static selectAlbum(album) {
-    this.selectedAlbum = album;
-    
-    // Update UI
-    document.querySelectorAll('.album-item').forEach(item => {
-      item.classList.toggle('active', item.dataset.albumId === album.id.toString());
-    });
-    
-    // Show album details
-    document.getElementById('album-details').style.display = 'block';
-    document.getElementById('album-detail-name').textContent = album.name;
-    document.getElementById('album-detail-description').textContent = album.description || 'No description available';
-    
-    // Highlight files already in this album
-    if (album.dicom_files && album.dicom_files.length > 0) {
-      const albumFileIds = album.dicom_files.map(f => f.id);
-      document.querySelectorAll('.dicom-file-item').forEach(item => {
-        item.classList.toggle(
-          'in-album', 
-          albumFileIds.includes(parseInt(item.dataset.fileId))
-        );
-      });
-    }
-  }
-
-  static async addFilesToSelectedAlbum() {
-    if (!this.selectedAlbum || this.selectedDicomFiles.size === 0) return;
-    
     try {
-      await this.addFilesToAlbum(
-        this.selectedAlbum.id, 
-        Array.from(this.selectedDicomFiles)
-      );
-      
-      Swal.fire('Success', 'Files added to album', 'success');
-      await this.loadAlbums(); // Refresh album list
-      this.selectedDicomFiles.clear();
-      
-      // Clear selection
-      document.querySelectorAll('.dicom-file-item.selected').forEach(item => {
-        item.classList.remove('selected');
+      const fileNames = Array.from(this.selectedDicomFiles).map(f => f.name);
+      await window.electronAPI.invoke('albums:addFiles', {
+        albumId: this.selectedAlbum.id,
+        fileNames
       });
-      
+
+      Swal.fire('Success', 'Files added to album successfully.', 'success');
+      this.selectedDicomFiles.clear();
+      this.updateAddToAlbumButtonState();
+      await this.loadDicomFiles(); // Refresh file list
     } catch (error) {
-      console.error('Failed to add files:', error);
+      console.error('Failed to add files to album:', error);
       Swal.fire('Error', 'Failed to add files to album', 'error');
     }
   }
-
-  static async showCreateAlbumDialog() {
-    const { value: formValues } = await Swal.fire({
-      title: 'Create New Album',
-      html:
-        '<input id="album-name" class="swal2-input" placeholder="Album Name" required>' +
-        '<textarea id="album-desc" class="swal2-textarea" placeholder="Description"></textarea>',
-      focusConfirm: false,
-      showCancelButton: true,
-      preConfirm: () => {
-        const name = document.getElementById('album-name').value.trim();
-        if (!name) {
-          Swal.showValidationMessage('Album name is required');
-          return false;
-        }
-        return {
-          name,
-          description: document.getElementById('album-desc').value.trim()
-        };
-      }
-    });
-
-    if (formValues) {
-      try {
-        await this.createAlbum(formValues.name, formValues.description);
-        await this.loadAlbums();
-        Swal.fire('Success', 'Album created successfully', 'success');
-      } catch (error) {
-        console.error('Album creation failed:', error);
-        Swal.fire('Error', 'Failed to create album', 'error');
-      }
-    }
-  }
-
-  static filterDicomFiles(searchTerm) {
-    const term = searchTerm.toLowerCase();
-    document.querySelectorAll('.dicom-file-item').forEach(item => {
-      const text = item.textContent.toLowerCase();
-      item.style.display = text.includes(term) ? 'flex' : 'none';
-    });
-  }
-
-  // API Methods
-  static async listAlbums() {
-    const response = await window.electronAPI.invoke('albums:list');
-    return response;
-  }
-
-  static async createAlbum(name, description) {
-    return await window.electronAPI.invoke('albums:create', { name, description });
-  }
-
-  static async addFilesToAlbum(albumId, fileIds) {
-    return await window.electronAPI.invoke('albums:add-files', { albumId, fileIds });
-  }
 }
 
-// Initialize when DOM is loaded
+// Initialize after DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   AlbumManager.init();
 });
+window.electronAPI.invoke('albums:get')
+  .then(albums => {
+    AlbumManager.albums = albums;
+    AlbumManager.renderAlbumList();
+  })
+  .catch(error => {
+    console.error('Failed to load albums:', error);
+  });
