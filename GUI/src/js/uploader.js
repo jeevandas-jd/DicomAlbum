@@ -1,41 +1,70 @@
 function updateStatus(message, type) {
-    const statusDiv = document.getElementById('status');
-    statusDiv.textContent = message;
-    statusDiv.className = type;
+  const statusDiv = document.getElementById('status');
+  statusDiv.textContent = message;
+  statusDiv.className = type;
+}
+
+async function handleFiles(files) {
+  const dicomFiles = Array.from(files).filter(file =>
+    file.name.toLowerCase().endsWith('.dcm')
+  );
+
+  if (dicomFiles.length === 0) {
+    updateStatus('No valid DICOM files found.', 'warning');
+    return;
   }
 
-  document.getElementById('upload-btn').addEventListener('click', async () => {
-    try {
-      // Use Electron's dialog to get files with paths
-      const result = await window.electronAPI.showOpenDialog({
-        properties: ['openFile', 'multiSelections'],
-        filters: [
-          { name: 'DICOM Files', extensions: ['dcm'] },
-          { name: 'All Files', extensions: ['*'] }
-        ]
-      });
-  
-      if (result.canceled) {
-        updateStatus('Upload cancelled', 'warning');
-        return;
-      }
-  
-      updateStatus('Uploading...', 'progress');
-      await window.electronAPI.uploadDICOM(result.filePaths);
-      updateStatus('Upload successful!', 'success');
-      console.log('Upload successful');
-    } catch (err) {
-      updateStatus(`Error: ${err.message}`, 'error');
-      console.error('Upload failed:', err);
-    }
-  });
+  try {
+    updateStatus('Uploading...', 'progress');
+    const filePaths = dicomFiles.map(file => file.path); // Electron gives access to file.path only when using dialog or drag-drop via preload
+    await window.electronAPI.uploadDICOM(filePaths);
+    updateStatus('Upload successful!', 'success');
+    console.log('Upload successful');
+  } catch (err) {
+    updateStatus(`Error: ${err.message}`, 'error');
+    console.error('Upload failed:', err);
+  }
+}
 
-  fetch('../components/sidebar.html')
-      .then(response => response.text())
-      .then(html => {
-        document.body.insertAdjacentHTML('afterbegin', html);
-        // Load sidebar JS after HTML is inserted
-        const script = document.createElement('script');
-        script.src = '../js/sidebar.js';
-        document.body.appendChild(script);
-      });
+document.getElementById('upload-btn').addEventListener('click', async () => {
+  try {
+    const result = await window.electronAPI.showOpenDialog({
+      properties: ['openFile', 'multiSelections'],
+      filters: [
+        { name: 'DICOM Files', extensions: ['dcm'] },
+        { name: 'All Files', extensions: ['*'] }
+      ]
+    });
+
+    if (result.canceled) {
+      updateStatus('Upload cancelled', 'warning');
+      return;
+    }
+
+    const fakeFileList = result.filePaths.map(path => ({ path, name: path.split(/[\\/]/).pop() }));
+    handleFiles(fakeFileList);
+  } catch (err) {
+    updateStatus(`Error: ${err.message}`, 'error');
+    console.error('Upload failed:', err);
+  }
+});
+
+// 🟦 Drag and Drop support
+const dropZone = document.getElementById('drop-zone');
+
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.classList.add('dragover');
+});
+
+dropZone.addEventListener('dragleave', () => {
+  dropZone.classList.remove('dragover');
+});
+
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+
+  const files = e.dataTransfer.files;
+  handleFiles(files);
+});

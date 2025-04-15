@@ -49,3 +49,24 @@
     background: #e2e3e5;
     color: #383d41;
   }
+
+  #drop-zone {
+    border: 2px dashed #ccc;
+    padding: 30px;
+    text-align: center;
+    margin: 20px 0;
+    border-radius: 10px;
+    color: #888;
+  }
+  #drop-zone.dragover {
+    border-color: #36f;
+    background: #f0f8ff;
+    color: #000;
+  }
+  #status {
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  #upload-btn {
+    margin-top: 10px;
+  }

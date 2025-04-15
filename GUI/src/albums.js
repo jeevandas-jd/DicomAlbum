@@ -116,7 +116,7 @@ class AlbumManager {
   static async addToAlbum() {
     if (!this.selectedAlbum || this.selectedDicomFiles.size === 0) {
       Swal.fire('Warning', 'Please select an album and DICOM files first.', 'warning');
-      return;
+      return; 
     }
 
     try {
