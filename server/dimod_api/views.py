@@ -76,6 +76,8 @@ class DICOMFileListView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        el=queryset[0].file
+        print(f"File path: {el}")
 
         print(f"Queryset before filtering: {queryset}")
         # Add any filtering logic here

@@ -83,20 +83,6 @@ class AlbumManager {
       Swal.fire('Error', 'Failed to load DICOM files', 'error');
     }
   }
-
-  static renderDicomFiles(files) {
-    const container = document.getElementById('dicom-files-list');
-    container.innerHTML = '';
-
-    files.forEach(file => {
-      const div = document.createElement('div');
-      div.className = 'dicom-file';
-      div.innerText = file.name;
-      div.addEventListener('click', () => this.toggleDicomSelection(file, div));
-      container.appendChild(div);
-    });
-  }
-
   static toggleDicomSelection(file, element) {
     if (this.selectedDicomFiles.has(file)) {
       this.selectedDicomFiles.delete(file);
@@ -107,6 +93,20 @@ class AlbumManager {
     }
     this.updateAddToAlbumButtonState();
   }
+  static renderDicomFiles(files) {
+    const container = document.getElementById('dicom-files-list');
+    container.innerHTML = '';
+
+    files.forEach(file => {
+      const div = document.createElement('div');
+      div.className = 'dicom-file';
+      div.innerText = file.file.split('/').pop();;
+      div.addEventListener('click', () => this.toggleDicomSelection(file, div));
+      container.appendChild(div);
+    });
+  }
+
+
 
   static updateAddToAlbumButtonState() {
     const btn = document.getElementById('add-to-album-btn');
@@ -121,6 +121,7 @@ class AlbumManager {
 
     try {
       const fileNames = Array.from(this.selectedDicomFiles).map(f => f.name);
+
       await window.electronAPI.invoke('albums:addFiles', {
         albumId: this.selectedAlbum.id,
         fileNames

@@ -60,7 +60,7 @@ ipcMain.handle('albums:create', async (event, { name, description }) => {
 ipcMain.handle('albums:add-files', async (event, { albumId, fileIds }) => {
   const response = await axios.post(`http://localhost:8000/api/albums/${albumId}/add-files/`, {
     file_ids: fileIds
-  });
+  }); 
   return response.data;
 });
 

@@ -6,6 +6,7 @@ class Album(models.Model):
     description = models.TextField(blank=True)
     
 class DICOMFile(models.Model):
+    filename = models.CharField(max_length=255, blank=True)
     file = models.FileField(upload_to='dicom/')
     patient_id = models.CharField(max_length=100, blank=True)
     study_date = models.DateField(null=True, blank=True)
