@@ -64,6 +64,22 @@ ipcMain.handle('albums:add-files', async (event, { albumId, fileIds }) => {
   return response.data;
 });
 
+ipcMain.handle('albums:get', async () => {
+  const response = await axios.get('http://localhost:8000/api/albums/');
+  return response.data;
+}
+);
+ipcMain.handle('albums:get-files', async (event, { albumId }) => {
+  const response = await axios.get(`http://localhost:8000/api/albums/${albumId}/files/`);
+  return response.data;
+}
+);
+
+ipcMain.handle('viwer:get', async (event, { id }) => {
+  const response = await axios.get(`http://localhost:8000/api/images/${id}/`);
+  return response.data;
+});
+
 app.whenReady().then(() => {
   mainWindow = new BrowserWindow({
     width: 1000,
