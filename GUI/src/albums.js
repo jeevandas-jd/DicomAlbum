@@ -78,10 +78,32 @@ class AlbumManager {
     try {
       const response = await axios.get('http://localhost:8000/api/images/');
       this.renderDicomFiles(response.data);
+      this.setupFilterListeners();
     } catch (error) {
       console.error('Failed to load DICOM files:', error);
       Swal.fire('Error', 'Failed to load DICOM files', 'error');
     }
+  }
+  static setupFilterListeners() {
+    document.getElementById('apply-filter-btn').addEventListener('click', () => {
+      const modality = document.getElementById('filter-modality').value;
+      const studyDate = document.getElementById('filter-study-date').value;
+  
+      this.filteredDicomFiles = this.allDicomFiles.filter(file => {
+        const matchesModality = modality ? file.modality === modality : true;
+        const matchesDate = studyDate ? file.study_date === studyDate : true;
+        return matchesModality && matchesDate;
+      });
+  
+      this.renderDicomFiles(this.filteredDicomFiles);
+    });
+  
+    document.getElementById('clear-filter-btn').addEventListener('click', () => {
+      document.getElementById('filter-modality').value = '';
+      document.getElementById('filter-study-date').value = '';
+      this.filteredDicomFiles = [...this.allDicomFiles];
+      this.renderDicomFiles(this.filteredDicomFiles);
+    });
   }
   static toggleDicomSelection(file, element) {
     if (this.selectedDicomFiles.has(file)) {
@@ -93,6 +115,24 @@ class AlbumManager {
     }
     this.updateAddToAlbumButtonState();
   }
+
+  static showMetadataPopup(metadata) {
+    const popup = document.getElementById('metadata-popup');
+    const content = document.getElementById('metadata-content');
+    const closeBtn = popup.querySelector('.close-btn');
+  
+    content.textContent = JSON.stringify(metadata, null, 2); // Pretty format
+    popup.classList.remove('hidden');
+  
+    closeBtn.onclick = () => popup.classList.add('hidden');
+  
+    // Optional: close on ESC key
+    document.onkeydown = (e) => {
+      if (e.key === 'Escape') {
+        popup.classList.add('hidden');
+      }
+    };
+  }
   static renderDicomFiles(files) {
     const container = document.getElementById('dicom-files-list');
     container.innerHTML = '';
@@ -100,8 +140,16 @@ class AlbumManager {
     files.forEach(file => {
       const div = document.createElement('div');
       div.className = 'dicom-file';
-      div.innerText = file.file.split('/').pop();;
+      let fileName = file.file.split('/').pop()+"\t\t"+file.id
+      div.innerText = fileName;
       div.addEventListener('click', () => this.toggleDicomSelection(file, div));
+      const metadata={"patiant_id":file.patient_id,
+                      "study_date":file.study_date,
+                      "modality":file.modality
+      }
+      div.addEventListener('dblclick', () => {
+        this.showMetadataPopup(metadata || {});
+      });
       container.appendChild(div);
     });
   }
