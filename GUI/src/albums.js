@@ -12,6 +12,35 @@ class AlbumManager {
   static setupEventListeners() {
     document.getElementById('create-album-btn').addEventListener('click', this.showCreateAlbumModal);
     document.getElementById('add-to-album-btn').addEventListener('click', this.addToAlbum.bind(this));
+    document.getElementById('apply-filters-btn').addEventListener('click', async () => {
+
+      console.log('Apply filters button clicked');
+      const patientId = document.getElementById('filter-patient-id').value;
+      const modality = document.getElementById('filter-modality').value;
+      if (modality === 'Other') {
+        const customModality = document.getElementById('custom-modality-input');
+        customModality.style.display = 'block';
+        customModality.addEventListener('input', () => {
+          const customText = customModality;
+          
+        }
+        );
+        modality = customModality ; 
+        console.log("new modality ",modality)// Use custom text if available
+      }
+      const dateFrom = document.getElementById('filter-date-from').value;
+      const dateTo = document.getElementById('filter-date-to').value;
+      
+      const filters = {
+        patient_id: patientId,
+        modality,
+        date_from: dateFrom,
+        date_to: dateTo
+      };
+    
+      await AlbumManager.loadFilteredFiles(filters);
+    });
+    
   }
 
   static showCreateAlbumModal() {
@@ -51,7 +80,6 @@ class AlbumManager {
       Swal.fire('Error', 'Failed to load albums', 'error');
     }
   }
-
   static renderAlbumList() {
     const albumList = document.getElementById('album-list');
     albumList.innerHTML = '';
@@ -60,10 +88,33 @@ class AlbumManager {
       const div = document.createElement('div');
       div.className = 'album-item';
       div.innerText = album.name;
-      div.addEventListener('click', () => this.selectAlbum(index));
+      div.addEventListener('click', () =>{
+        window.location.href = `manage_album.html?album_id=${album.id}`;
+      });
       albumList.appendChild(div);
     });
   }
+
+  // This function is called when the user selects a filter
+  static async loadFilteredFiles(filters) {
+    try {
+      const response = await window.electronAPI.invoke('dicom:previewFiltered',  {filters} );
+      console.log('Filtered DICOM files:', response);
+
+      if (response.status === 'success') {
+        //this.filteredFiles = response.file;
+        this.renderDicomFiles(response.files) // You should define this to show the preview list
+      } else {
+        console.warn('No matching files found');
+        Swal.fire('No Matches', response.message, 'warning');
+      }
+    } catch (error) {
+      console.error('Failed to load filtered DICOM files:', error);
+      Swal.fire('Error', 'Failed to load filtered files', error);
+      console.log(error);
+    }
+  }
+  
 
   static selectAlbum(index) {
     this.selectedAlbum = this.albums[index];
@@ -78,10 +129,10 @@ class AlbumManager {
     try {
       const response = await axios.get('http://localhost:8000/api/images/');
       this.renderDicomFiles(response.data);
-      this.setupFilterListeners();
+      //this.setupFilterListeners();
     } catch (error) {
       console.error('Failed to load DICOM files:', error);
-      Swal.fire('Error', 'Failed to load DICOM files', 'error');
+      Swal.fire('Error', 'Failed to load DICOM files but its working', 'error');
     }
   }
   static setupFilterListeners() {

@@ -3,6 +3,8 @@ from django.db import models
 class Album(models.Model):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+    dicom_files = models.ManyToManyField('DICOMFile', related_name='albums', blank=True)
+
     description = models.TextField(blank=True)
     
 class DICOMFile(models.Model):
@@ -12,3 +14,4 @@ class DICOMFile(models.Model):
     study_date = models.DateField(null=True, blank=True)
     modality = models.CharField(max_length=10, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+

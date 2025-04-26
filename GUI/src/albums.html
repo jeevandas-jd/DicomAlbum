@@ -56,14 +56,19 @@
         <div id="filter-section" class="filter-section">
           <input type="text" id="filter-patient-id" placeholder="Patient ID">
         
-          <select id="filter-modality">
-            <option value="">All Modalities</option>
-            <option value="CT">CT</option>
-            <option value="MRI">MRI</option>
-            <option value="XRay">XRay</option>
-            <!-- Add other modalities as needed -->
-          </select>
-        
+          <div class="modality-filter">
+            <input list="modality-options" id="filter-modality" placeholder="Select or type modality" />
+
+            <datalist id="modality-options">
+              <option value="CT">
+              <option value="MR">
+              <option value="XRay">
+              <!-- No need to add 'Other' anymore, user can just type -->
+            </datalist>
+            <!-- Hidden input initially -->
+           
+          </div>
+          
           <input type="date" id="filter-date-from" placeholder="From">
           <input type="date" id="filter-date-to" placeholder="To">
         

@@ -1,0 +1,32 @@
+<link rel="stylesheet" href="styles/manage_album.css" />
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="manage_album.js"></script>
+
+<div class="album-manage-page">
+  <h2>Manage Album</h2>
+
+  <div class="album-info">
+    <label for="album-name-input">Album Name:</label>
+    <input type="text" id="album-name-input" />
+
+    <label for="album-description-input">Description:</label>
+    <textarea id="album-description-input"></textarea>
+
+    <button id="save-album-changes-btn">Save Changes</button>
+  </div>
+
+  <h3>Album DICOM Files</h3>
+  <div id="album-dicom-files-list"></div>
+
+  <button id="add-dicom-files-btn">Add More DICOM Files</button>
+
+  <div class="danger-zone">
+    <h4>Danger Zone</h4>
+    <button id="delete-album-btn" class="btn-danger">Delete Album</button>
+  </div>
+
+  <div class="back-btn">
+    <button onclick="window.location.href='albums.html'">Back to Albums</button>
+  </div>
+</div>

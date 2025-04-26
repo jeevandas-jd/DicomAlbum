@@ -79,6 +79,27 @@ ipcMain.handle('viwer:get', async (event, { id }) => {
   const response = await axios.get(`http://localhost:8000/api/images/${id}/`);
   return response.data;
 });
+ipcMain.handle('dicom:previewFiltered', async (event, { filters }) => {
+
+  console.log('Received filters:', filters); 
+  try {
+    const response = await axios.post('http://localhost:8000/api/albums/dicom/preview/',filters);
+    return response.data;
+  } catch (error) {
+    console.error("Error previewing filtered DICOM files:", error.response?.data || error.message);
+    throw error;
+  }
+});
+ipcMain.handle('dicom:album-detail', async (event, { albumId }) => {
+  try{
+    const response = await axios.get(`http://localhost:8000/api/albums/${albumId}/`);
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error fetching album details:", error.response?.data || error.message);
+    throw error;
+  }
+});
 
 app.whenReady().then(() => {
   mainWindow = new BrowserWindow({

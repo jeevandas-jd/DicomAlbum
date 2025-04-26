@@ -1,0 +1,133 @@
+.album-manage-page {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .album-manage-page h2,
+  .album-manage-page h3 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .album-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+  
+  .album-info label {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .album-info input,
+  .album-info textarea {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+    resize: vertical;
+  }
+  
+  #save-album-changes-btn,
+  #add-dicom-files-btn,
+  #delete-album-btn {
+    padding: 10px 18px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  #save-album-changes-btn {
+    background-color: #4CAF50;
+    color: white;
+    width: fit-content;
+    margin-top: 10px;
+  }
+  
+  #save-album-changes-btn:hover {
+    background-color: #45a049;
+  }
+  
+  #add-dicom-files-btn {
+    background-color: #2196F3;
+    color: white;
+    margin-top: 10px;
+  }
+  
+  #add-dicom-files-btn:hover {
+    background-color: #1976d2;
+  }
+  
+  .danger-zone {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #fff0f0;
+    border: 1px solid #ffcccc;
+    border-radius: 12px;
+  }
+  
+  .danger-zone h4 {
+    color: #cc0000;
+    margin-bottom: 10px;
+  }
+  
+  #delete-album-btn {
+    background-color: #e53935;
+    color: white;
+  }
+  
+  #delete-album-btn:hover {
+    background-color: #c62828;
+  }
+  
+  #album-dicom-files-list {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #eee;
+    border-radius: 8px;
+    min-height: 80px;
+  }
+  
+  .album-dicom-file {
+    padding: 8px;
+    margin-bottom: 6px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+  
+  .album-manage-page a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .album-manage-page button a {
+    color: white;
+    font-weight: 600;
+  }
+  
+  .album-manage-page button {
+    background-color: #666;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .album-manage-page button:hover {
+    background-color: #555;
+  }
+  
