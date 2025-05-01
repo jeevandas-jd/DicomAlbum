@@ -49,10 +49,10 @@ ipcMain.handle('albums:list', async () => {
   return response.data;
 });
 
-ipcMain.handle('albums:create', async (event, { name, description }) => {
-  const response = await axios.post('http://localhost:8000/api/albums/', {
+ipcMain.handle('albums:create', async (event, { name, file_ids }) => {
+  const response = await axios.post('http://localhost:8000/api/albums/create/', {
     name,
-    description
+    file_ids
   });
   return response.data;
 });

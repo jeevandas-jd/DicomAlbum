@@ -4,6 +4,97 @@
   <title>DICOM Viewer</title>
   <link rel="stylesheet" href="styles/sidebar.css">
   <link rel="stylesheet" href="styles/uploader.css">
+  <link rel="stylesheet" href="styles/albums.css">
+  <link rel="stylesheet" href="styles/viewer.css">
+  <style>
+    .content-area {
+      margin-left: 250px;
+      padding: 30px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .viewer-container h2 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .filter-section {
+      margin-top: 25px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .filter-section input,
+    #apply-filters-btn {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    #apply-filters-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #apply-filters-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .select-all-container {
+      margin: 25px 0 10px 0;
+    }
+
+    .dicom-files-list {
+      border-top: 1px solid #ddd;
+      padding-top: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .dicom-file-item {
+      display: flex;
+      align-items: center;
+      background: #f9f9f9;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .dicom-file-item:hover {
+      background-color: #e0f0ff;
+    }
+
+    .dicom-file-item.selected {
+      background-color: #d0eaff;
+      border-left: 4px solid #007bff;
+    }
+
+    .dicom-file-item input[type="checkbox"] {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    #add-selected-btn {
+      margin-top: 20px;
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #add-selected-btn:hover {
+      background-color: #1e7e34;
+    }
+  </style>
 </head>
 <body>
   <!-- Sidebar -->
@@ -11,7 +102,6 @@
     <div class="sidebar-header">
       <img src="assets/logo-icon.svg" alt="DICOM Album" class="sidebar-logo">
     </div>
-
     <ul class="sidebar-menu">
       <li class="menu-item" data-page="uploader">
         <img src="assets/upload-icon.svg" alt="Upload">
@@ -36,12 +126,84 @@
   <div class="content-area">
     <div class="viewer-container">
       <h2>Welcome to the DICOM Viewer</h2>
-      <p> <p>DICOM Viewer will be available here soon!</p>
-      <small>(Integration with OHIF / Niftier coming up)</small></p>
-      <!-- Empty space intentionally left here -->
+      <p>DICOM Viewer will be available here soon!</p>
+      <small>(Integration with OHIF / Niftier coming up)</small>
+
+      <!-- Filter Section -->
+      <div id="filter-section" class="filter-section">
+        <input type="text" id="filter-patient-id" placeholder="Patient ID">
+        <div class="modality-filter">
+          <input list="modality-options" id="filter-modality" placeholder="Select or type modality" />
+          <datalist id="modality-options">
+            <option value="CT">
+            <option value="MR">
+            <option value="XRay">
+          </datalist>
+        </div>
+        <input type="date" id="filter-date-from" placeholder="From">
+        <input type="date" id="filter-date-to" placeholder="To">
+        <button id="apply-filters-btn" class="btn-primary">Apply Filters</button>
+      </div>
+
+      <!-- Select All Checkbox -->
+      <div class="select-all-container">
+        <label>
+          <input type="checkbox" id="select-all-checkbox"> Select All DICOM Files
+        </label>
+      </div>
+
+      <!-- DICOM File List -->
+      <div id="dicom-files-list" class="dicom-files-list"></div>
+
+      <!-- Add Selected Button -->
+      <button id="add-selected-btn" class="btn-secondary">Add Selected</button>
     </div>
   </div>
 
   <script src="js/sidebar.js"></script>
+  <script src="albums.js"></script>
+
+  <script>
+    // Load dummy DICOM files
+    function loadDicomFiles() {
+      const fileList = document.getElementById("dicom-files-list");
+      const exampleFiles = [
+        "Patient123_CT_2023-05-10.dcm",
+        "Patient456_MR_2023-05-11.dcm",
+        "Patient789_XRay_2023-05-12.dcm"
+      ];
+
+      exampleFiles.forEach(file => {
+        const item = document.createElement("div");
+        item.className = "dicom-file-item";
+        item.innerHTML = `
+          <label style="display: flex; align-items: center; width: 100%;">
+            <input type="checkbox" class="dicom-checkbox">
+            <span>${file}</span>
+          </label>`;
+        fileList.appendChild(item);
+      });
+    }
+
+    // Select all checkbox toggle
+    document.addEventListener("DOMContentLoaded", function () {
+      loadDicomFiles();
+
+      document.getElementById("select-all-checkbox").addEventListener("change", function () {
+        const isChecked = this.checked;
+        document.querySelectorAll(".dicom-checkbox").forEach(checkbox => {
+          checkbox.checked = isChecked;
+          checkbox.closest(".dicom-file-item").classList.toggle("selected", isChecked);
+        });
+      });
+
+      document.addEventListener("change", function (e) {
+        if (e.target.classList.contains("dicom-checkbox")) {
+          const item = e.target.closest(".dicom-file-item");
+          item.classList.toggle("selected", e.target.checked);
+        }
+      });
+    });
+  </script>
 </body>
 </html>

@@ -15,3 +15,4 @@ class DICOMFile(models.Model):
     modality = models.CharField(max_length=10, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    

@@ -1,0 +1,102 @@
+.dicom-selector {
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .dicom-selector h3 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .dicom-search,
+  .filter-section input[type="text"],
+  .filter-section input[type="date"],
+  .filter-section input[list],
+  #apply-filters-btn {
+    width: 100%;
+    padding: 10px 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .dicom-search:focus,
+  .filter-section input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 3px rgba(0, 123, 255, 0.3);
+  }
+  
+  .filter-section {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 15px;
+  }
+  
+  #apply-filters-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  #apply-filters-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .dicom-files-list {
+    margin-top: 25px;
+    max-height: 300px;
+    overflow-y: auto;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+  }
+  
+  .dicom-file-item {
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+  }
+  
+  .dicom-file-item:hover {
+    background-color: #e0f0ff;
+  }
+  
+  .dicom-file-item.selected {
+    background-color: #d0eaff;
+    border-left: 4px solid #007bff;
+  }
+  
+  #add-selected-btn {
+    margin-top: 20px;
+    width: 100%;
+    background-color: #28a745;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  #add-selected-btn:hover {
+    background-color: #1e7e34;
+  }
+  

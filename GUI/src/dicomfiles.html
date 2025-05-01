@@ -5,7 +5,6 @@
   <title>Album Manager</title>
   <link rel="stylesheet" href="styles/sidebar.css">
   <link rel="stylesheet" href="styles/albums.css">
-  <link rel="stylesheet" href="styles/viewer.css">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -33,6 +32,7 @@
         <img src="assets/home-icon.svg" alt="Home">
         <span>Return Home</span>
       </li>
+      s
     </ul>
   </nav>
 
@@ -44,6 +44,25 @@
       <div id="album-actions">
         <button id="create-album-btn" class="btn-primary">+ Create Album</button>
         <input type="text" id="dicom-search" placeholder="Search DICOM files..." class="dicom-search">
+
+        <div id="filter-section" class="filter-section">
+          <input type="text" id="filter-patient-id" placeholder="Patient ID">
+
+          <div class="modality-filter">
+            <input list="modality-options" id="filter-modality" placeholder="Select or type modality" />
+            <datalist id="modality-options">
+              <option value="CT">
+              <option value="MR">
+              <option value="XRay">
+              <!-- No 'Other' option needed, just type -->
+            </datalist>
+          </div>
+
+          <input type="date" id="filter-date-from" placeholder="From">
+          <input type="date" id="filter-date-to" placeholder="To">
+          
+          <button id="apply-filters-btn" class="btn-primary">Apply Filters</button>
+        </div>
       </div>
 
       <div id="album-list" class="album-list"></div>
@@ -54,28 +73,9 @@
       </div>
 
       <h2>DICOM Files</h2>
-      <div id="filter-section" class="filter-section">
-        <input type="text" id="filter-patient-id" placeholder="Patient ID">
-
-        <div class="modality-filter">
-          <input list="modality-options" id="filter-modality" placeholder="Select or type modality" />
-          <datalist id="modality-options">
-            <option value="CT">
-            <option value="MR">
-            <option value="XRay">
-          </datalist>
-        </div>
-
-        <input type="date" id="filter-date-from" placeholder="From">
-        <input type="date" id="filter-date-to" placeholder="To">
-
-        <button id="apply-filters-btn" class="btn-primary">Apply Filters</button>
-      </div>
-
       <div id="dicom-files-list" class="dicom-files-list"></div>
     </div>
 
-    <!-- Metadata Popup -->
     <div id="metadata-popup" class="metadata-popup hidden">
       <div class="popup-content">
         <span class="close-btn">&times;</span>

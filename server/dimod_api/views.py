@@ -72,9 +72,21 @@ class AddToAlbumView(APIView):
         return Response({"status": "success"})
 class CreateAlbumView(APIView):
     def post(self, request):
+
+        print("Request data:", request.data)
         serializer = AlbumSerializer(data=request.data)
         if serializer.is_valid():
             album = serializer.save()
+            print(f"Album created with ID: {album.id}")
+            # Add DICOM files to the album
+            file_ids = request.data.get('file_ids', [])
+            for file_id in file_ids:
+                try:
+                    dicom_file = DICOMFile.objects.get(pk=file_id)
+                    print(f"Adding file {dicom_file.id} to album {album.id}")
+                    album.dicom_files.add(dicom_file)
+                except DICOMFile.DoesNotExist:
+                    return Response({"status": "error", "message": f"File with ID {file_id} does not exist"}, status=404)
             return Response({"status": "success", "album_id": album.id}, status=201)
         return Response(serializer.errors, status=400)
     
@@ -103,6 +115,7 @@ class CreateAlbumFromMetadataView(APIView):
         file_ids = metadata.get('file_ids', [])
         for file_id in file_ids:
             dicom_file = get_object_or_404(DICOMFile, pk=file_id)
+            print(f"Adding file {dicom_file.id} to album {album.id}")
             album.dicom_files.add(dicom_file)
         
         return Response({"status": "success", "album_id": album.id}, status=201)
@@ -152,16 +165,23 @@ class deleteAlbumView(APIView):
         
 # Get album details
 class AlbumDetailView(APIView):
+    serializer_class = DICOMFileSerializer
     def get(self, request, album_id):
         album = get_object_or_404(Album, id=album_id)
         print(f"Album ID: {album.id}")
         print(f"Album Name: {album.name}")
         print(f"Album Description: {album.description}")
-        files = DICOMFileSerializer(album.dicom_files.all(), many=True).data
+        querryset = album.dicom_files.all()
+        serialser = DICOMFileSerializer(querryset, many=True)
+
+
+        print(f"Files in album: {querryset}")
+        print(f"Files serialized:{serialser.data}")
+        name=album.dicom_files
         return Response({
             "name": album.name,
             "description": album.description,
-            "files": files,
+            "files": serialser.data,
         })
 
     def put(self, request, album_id):
