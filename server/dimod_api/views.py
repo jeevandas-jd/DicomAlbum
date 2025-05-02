@@ -2,6 +2,8 @@
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from .models import DICOMFile
 import pydicom  
 import os
@@ -10,7 +12,43 @@ from .serializers import AlbumSerializer
 from .models import Album
 from django.shortcuts import get_object_or_404
 from .serializers import DICOMFileSerializer
+from django.contrib.auth.models import User
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAuthenticated
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        email = request.data.get('email')
+        
+        if not username or not password or not email:
+            return Response({"error": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.create_user(username=username, password=password, email=email)
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_201_CREATED)
+class LoginView(TokenObtainPairView):
+    permission_classes = [AllowAny]
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK)  
 class UploadView(APIView):
+    permission_classes = [IsAuthenticated]
+    #parser_classes = [FileUploadParser]
     parser_classes = [MultiPartParser]
     
     def post(self, request):
@@ -195,3 +233,4 @@ class AlbumDetailView(APIView):
         album = get_object_or_404(Album, id=album_id)
         album.delete()  
         return Response({"status": "deleted"})
+

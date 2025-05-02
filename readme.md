@@ -56,7 +56,7 @@ This project is developed as part of **Google Summer of Code 2025**.
 
 ```
 sharable-dicom-album/
-├── client/       # ElectronJS app
+├── GUI/       # ElectronJS app
 ├── server/       # Django backend
 ├── requirements.txt
 └── README.md
@@ -92,7 +92,7 @@ python manage.py runserver
 ### 3. Frontend Setup (ElectronJS)
 
 ```bash
-cd ../client
+cd ../GUI
 npm install
 npm start
 ```

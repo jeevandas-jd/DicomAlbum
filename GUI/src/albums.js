@@ -81,17 +81,36 @@
     static renderAlbumList() {
       const albumList = document.getElementById('album-list');
       albumList.innerHTML = '';
-
-      this.albums.forEach((album, index) => {
+    
+      this.albums.forEach((album) => {
         const div = document.createElement('div');
         div.className = 'album-item';
-        div.innerText = album.name;
-        div.addEventListener('click', () =>{
+    
+        // Build inner HTML with all fields
+        div.innerHTML = `
+          <div class="album-cover">
+            <img src="${album.coverUrl || 'assets/default_cover.png'}" alt="Cover" style="max-height: 100%; max-width: 100%; object-fit: cover;" />
+          </div>
+          <div class="album-item-header" style="padding: 10px;">
+            <strong>${album.name}</strong>
+            <span class="file-count">${album.fileCount || 0} files</span>
+          </div>
+          <div class="album-description" style="padding: 0 10px;">
+            ${album.description || 'No description'}
+          </div>
+          <div class="album-meta" style="padding: 0 10px 10px;">
+            Created: ${album.createdAt || 'N/A'}
+          </div>
+        `;
+    
+        div.addEventListener('click', () => {
           window.location.href = `manage_album.html?album_id=${album.id}`;
         });
+    
         albumList.appendChild(div);
       });
     }
+
 
     // This function is called when the user selects a filter
     static async loadFilteredFiles(filters) {

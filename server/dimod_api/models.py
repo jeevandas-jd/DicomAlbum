@@ -6,6 +6,8 @@ class Album(models.Model):
     dicom_files = models.ManyToManyField('DICOMFile', related_name='albums', blank=True)
 
     description = models.TextField(blank=True)
+    creator = models.CharField(max_length=100, blank=True)
+    filecount = models.IntegerField(default=0)
     
 class DICOMFile(models.Model):
     filename = models.CharField(max_length=255, blank=True)

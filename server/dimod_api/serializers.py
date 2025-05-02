@@ -13,7 +13,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
-        fields = ['id', 'name', 'description', 'created_at', 'dicom_files']
+        fields = ['id', 'name', 'description', 'created_at', 'dicom_files', 'creator', 'filecount']
 
     def create(self, validated_data):
         dicom_files = validated_data.pop('dicom_files', [])
