@@ -17,6 +17,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -35,17 +36,19 @@ class RegisterView(APIView):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }, status=status.HTTP_201_CREATED)
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        # Add extra responses here
+        data['username'] = self.user.username
+        data['email'] = self.user.email
+        print(f"User {self.user.username} logged in successfully.")
+        return data
+
+
 class LoginView(TokenObtainPairView):
-    permission_classes = [AllowAny]
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_200_OK)  
+    
+    serializer_class = CustomTokenObtainPairSerializer
 class UploadView(APIView):
     permission_classes = [IsAuthenticated]
     #parser_classes = [FileUploadParser]

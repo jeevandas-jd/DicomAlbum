@@ -10,7 +10,9 @@ from .views import (
     PreviewFilteredDICOMFilesView,
     deleteAlbumView,
     AlbumDetailView,
-    CreateAlbumView
+    CreateAlbumView,
+    RegisterView,
+    LoginView,
 )
 
 urlpatterns = [
@@ -20,6 +22,9 @@ urlpatterns = [
     # Album endpoints
     path('albums/', AlbumListCreate.as_view(), name='album-list'),
     path('albums/<int:pk>/', AlbumDetail.as_view(), name='album-detail'),
+    #authentication
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
     path('albums/<int:album_id>/add-files/', AddToAlbumView.as_view(), name='add-to-album'),
     path('albums/dicom/preview/', PreviewFilteredDICOMFilesView.as_view(), name='preview_dicom_files'),
     path('albums/create/', CreateAlbumView.as_view(), name='create-album'),
