@@ -69,7 +69,7 @@ sharable-dicom-album/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/<your-username>/sharable-dicom-album.git
+git clone https://github.com/jeevandas-jd/DicomAlbum
 cd sharable-dicom-album
 ```
 
