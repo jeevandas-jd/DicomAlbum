@@ -9,6 +9,9 @@ function navigate(page) {
       case 'viewer':
         window.location.href = 'viewer.html';
         break;
+      case 'auth':
+        window.location.href = 'auth.html';
+        break;
       default:
         console.error('Unknown page:', page);
     }

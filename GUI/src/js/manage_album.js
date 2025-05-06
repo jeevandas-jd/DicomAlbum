@@ -122,16 +122,18 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('add-selected-btn').addEventListener('click', async () => {
     const selected = [...document.querySelectorAll('#dicom-files-list input[type="checkbox"]:checked')]
       .map(cb => cb.value);
-
+  
     if (selected.length === 0) {
       Swal.fire('No files selected', '', 'warning');
       return;
     }
-
+  
     try {
-      await axios.post(`http://localhost:8000/api/albums/${albumId}/add-files/`, {
-        file_ids: selected
+      await window.electronAPI.addFilesToAlbum({
+        albumId: albumId,
+        fileIds: selected
       });
+  
       Swal.fire('Added', 'Files added to album', 'success');
       fetchAlbum(); // reload album
       Swal.close(); // close modal
@@ -140,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
       Swal.fire('Error', 'Could not add files', 'error');
     }
   });
+  
 }
 
     document.getElementById('save-album-changes-btn').addEventListener('click', saveChanges);

@@ -1,3 +1,4 @@
+  
   class AlbumManager {
     static albums = [];
     static selectedAlbum = null;
@@ -93,10 +94,11 @@
           </div>
           <div class="album-item-header" style="padding: 10px;">
             <strong>${album.name}</strong>
-            <span class="file-count">${album.fileCount || 0} files</span>
+            <span class="file-count">${album.fileCount|| 0} files</span>
           </div>
           <div class="album-description" style="padding: 0 10px;">
             ${album.description || 'No description'}
+            ${album.owner ? `<br><small>Owner: ${album.owner}</small>` : ''}
           </div>
           <div class="album-meta" style="padding: 0 10px 10px;">
             Created: ${album.createdAt || 'N/A'}
